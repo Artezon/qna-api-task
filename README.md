@@ -1,8 +1,11 @@
-# QnA service
+# Q&A service
 
 This is a Python web service application where you can ask questions and post answers to them!
 
 Below are instructions to run it in Docker :)
+
+> [!NOTE]
+> This guide assumes you already have PostgreSQL running somewhere. If not, you need to deploy it first. It's recommended to use an official `postgres` docker image.
 
 ### 1. Build Docker Image
 
@@ -23,11 +26,11 @@ Alternatively add them into `docker-compose.yml` or set variables in your shell.
 
 ### 3. Change port mapping
 
-If you changed port in environment variable, you also need to change the port on the right in `docker-compose.yml` to match. Change the left port if you want the app to use a different external port (optional).
+If you changed port in environment variable, you also need to change the container port (right) in `docker-compose.yml` to match. Change the host port (left) if you want the app to use a different external port (optional).
 
 ### 4. Prepare the database
 
-Make sure the database exists and is accessible with provided credentials. If you just installed or updated the app, please double-check anything and run the migration script:
+Make sure the database exists (create an empty one if not) and is accessible with provided credentials. If you just installed or updated the app, please double-check anything and run the migration script:
 ```bash
 docker compose run --rm qna_app alembic upgrade head
 ```
