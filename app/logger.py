@@ -4,7 +4,7 @@ from app.utils import is_env_true
 
 load_dotenv()
 
-debug: bool = is_env_true("DEBUG")
+debug: bool = is_env_true("DEBUG_LOG")
 
 logging.basicConfig(
     level=logging.DEBUG if debug else logging.INFO,  # DEBUG, INFO, WARNING, ERROR, CRITICAL
