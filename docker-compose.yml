@@ -1,0 +1,7 @@
+services:
+  qna_app:
+    build: .
+    image: qna_app:latest
+    env_file: .env
+    ports:
+      - "80:80"
