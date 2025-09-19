@@ -11,7 +11,7 @@ from app.repository.questions import QuestionRepository
 answers_api = APIRouter(prefix="/answers")
 
 @questions_api.post("/{question_id}/answers", response_model=AnswerRead)
-async def post_answer(
+def post_answer(
     question_id: int,
     answer_in: AnswerCreate
 ):
@@ -33,7 +33,7 @@ async def post_answer(
 
 
 @answers_api.get("/{id}", response_model=AnswerRead)
-async def get_answer(id: int):
+def get_answer(id: int):
     """Get an answer by ID"""
     logger.debug(f"Fetching answer with ID: {id}")
     with Session(engine) as session:
@@ -48,7 +48,7 @@ async def get_answer(id: int):
 
 
 @answers_api.delete("/{id}")
-async def delete_answer(id: int):
+def delete_answer(id: int):
     """Delete an answer by ID"""
     logger.debug(f"Deleting answer with ID: {id}")
 

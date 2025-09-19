@@ -10,7 +10,7 @@ questions_api = APIRouter(prefix="/questions")
 
 
 @questions_api.get("/", response_model=PaginatedQuestions)
-async def get_questions(
+def get_questions(
     page: int = Query(1, ge=1, description="Page number"),
     count: int = Query(10, ge=1, le=1000, description="Number of questions per page"),
     sort_order: str = Query("asc", pattern="^(asc|desc)$", description="Sort order: 'asc' or 'desc'")
@@ -31,7 +31,7 @@ async def get_questions(
 
 
 @questions_api.post("/", response_model=QuestionReadNoAnswers)
-async def post_question(
+def post_question(
     question_in: QuestionCreate
 ):
     """Post a new question"""
@@ -47,7 +47,7 @@ async def post_question(
 
 
 @questions_api.get("/{id}", response_model=QuestionReadWithAnswers)
-async def get_question(id: int):
+def get_question(id: int):
     """Get a question by ID with answers"""
     logger.debug(f"Fetching question with ID: {id}")
     with Session(engine) as session:
@@ -62,7 +62,7 @@ async def get_question(id: int):
 
 
 @questions_api.delete("/{id}")
-async def delete_question(id: int):
+def delete_question(id: int):
     """Delete a question by ID and all its answers"""
     logger.debug(f"Deleting question with ID: {id}")
 
