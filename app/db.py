@@ -6,6 +6,6 @@ from app.utils import is_env_true
 load_dotenv()
 
 db_url = os.getenv("DB_URL")
-echo = is_env_true("DEBUG")
+echo = is_env_true("DB_ECHO")
 
 engine = create_engine(db_url, echo=echo)

@@ -40,3 +40,8 @@ class AnswerRead(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class AnswerCreate(BaseModel):
+    user_id: uuid.UUID | None = Field(None, description="ID of the user answering the question. If empty, a random one will be generated")
+    text: str = Field(..., min_length=1, description="Question text")

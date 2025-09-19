@@ -3,6 +3,7 @@ from fastapi import FastAPI
 import uvicorn
 from app.utils import is_env_true
 from app.routes.questions import questions_api
+from app.routes.answers import answers_api
 
 kwargs = {}
 if not is_env_true("API_DOCS"):
@@ -11,6 +12,7 @@ if not is_env_true("API_DOCS"):
 app = FastAPI(**kwargs)
 
 app.include_router(questions_api)
+app.include_router(answers_api)
 
 if __name__ == "__main__":
     host = os.getenv("SERVER_HOST")

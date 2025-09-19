@@ -68,7 +68,7 @@ async def get_question(id: int):
         return QuestionReadWithAnswers.model_validate(question)  # This will load answers to the question
 
 
-@questions_api.delete("/{id}", response_model=Question)
+@questions_api.delete("/{id}")
 async def delete_question(id: int):
     """Delete a question by ID and all its answers"""
     logger.debug(f"Deleting question with ID: {id}")
@@ -76,6 +76,7 @@ async def delete_question(id: int):
     with Session(engine) as session:
         question = session.exec(select(Question).where(Question.id == id)).first()
         if not question:
+            logger.debug(f"Question with ID {id} not found")
             raise HTTPException(status_code=404, detail="Question not found")
         
         session.delete(question)
