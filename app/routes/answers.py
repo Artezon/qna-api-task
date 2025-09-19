@@ -5,6 +5,8 @@ from app.models.api import AnswerCreate, AnswerRead, PaginatedQuestions, Questio
 from app.models.tables import Answer, Question
 from app.db import engine
 from app.routes.questions import questions_api
+from app.repository.answers import AnswerRepository
+from app.repository.questions import QuestionRepository
 
 answers_api = APIRouter(prefix="/answers")
 
@@ -19,14 +21,12 @@ async def post_answer(
     logger.debug(f"Creating new answer for question ID={question_id} from user ID={new_answer.user_id} with text: {new_answer.text}")
 
     with Session(engine) as session:
-        question = session.get(Question, question_id)
+        question = QuestionRepository.get_question(session, question_id)
         if not question:
             logger.debug(f"Question ID={question_id} not found")
             raise HTTPException(status_code=404, detail="Question not found")
 
-        session.add(new_answer)
-        session.commit()
-        session.refresh(new_answer)
+        AnswerRepository.insert_answer(session, new_answer)
         logger.debug(f"Created answer for question ID={question_id} from user ID={new_answer.user_id} with ID: {new_answer.id}")
 
     return AnswerRead.model_validate(new_answer)
@@ -37,7 +37,7 @@ async def get_answer(id: int):
     """Get an answer by ID"""
     logger.debug(f"Fetching answer with ID: {id}")
     with Session(engine) as session:
-        answer = session.exec(select(Answer).where(Answer.id == id)).first()
+        answer = AnswerRepository.get_answer(session, id)
         if not answer:
             logger.warning(f"Answer with ID {id} not found")
             raise HTTPException(status_code=404, detail="Answer not found")
@@ -53,13 +53,12 @@ async def delete_answer(id: int):
     logger.debug(f"Deleting answer with ID: {id}")
 
     with Session(engine) as session:
-        answer = session.exec(select(Answer).where(Answer.id == id)).first()
+        answer = AnswerRepository.get_answer(session, id)
         if not answer:
             logger.warning(f"Answer with ID {id} not found")
             raise HTTPException(status_code=404, detail="Answer not found")
         
-        session.delete(answer)
-        session.commit()
+        answer = AnswerRepository.delete_answer(session, answer)
         logger.debug(f"Deleted answer with ID: {id}")
 
     return None

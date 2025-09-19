@@ -4,6 +4,7 @@ from app.logger import logger
 from app.models.api import PaginatedQuestions, QuestionCreate, QuestionReadNoAnswers, QuestionReadWithAnswers
 from app.models.tables import Question
 from app.db import engine
+from app.repository.questions import QuestionRepository
 
 questions_api = APIRouter(prefix="/questions")
 
@@ -18,21 +19,15 @@ async def get_questions(
     logger.debug(f"Fetching questions: page={page}, count={count}, sort_order={sort_order}")
 
     offset = (page - 1) * count
-    stmt = (
-        select(Question)
-        .order_by(Question.id if sort_order.lower() == "asc" else Question.id.desc())
-        .offset(offset)
-        .limit(count)
-    )
 
     with Session(engine) as session:
-        questions = session.exec(stmt).all()
-        total = session.exec(select(func.count(Question.id))).one()
+        questions = QuestionRepository.get_questions(session, offset, count, sort_order)
+        total = QuestionRepository.count_questions(session)
         logger.debug(f"Fetched {len(questions)} questions out of total {total}")
 
     questions = [QuestionReadNoAnswers.model_validate(q) for q in questions]
 
-    return PaginatedQuestions(page=page, count=count, total=total, data=questions)
+    return PaginatedQuestions(page=page, count=len(questions), total=total, data=questions)
 
 
 @questions_api.post("/", response_model=QuestionReadNoAnswers)
@@ -45,9 +40,7 @@ async def post_question(
     new_question = Question(text=question_in.text)
 
     with Session(engine) as session:
-        session.add(new_question)
-        session.commit()
-        session.refresh(new_question)
+        QuestionRepository.insert_question(session, new_question)
         logger.debug(f"Created question with ID: {new_question.id}")
 
     return QuestionReadNoAnswers.model_validate(new_question)
@@ -58,7 +51,7 @@ async def get_question(id: int):
     """Get a question by ID with answers"""
     logger.debug(f"Fetching question with ID: {id}")
     with Session(engine) as session:
-        question = session.exec(select(Question).where(Question.id == id)).first()
+        question = QuestionRepository.get_question(session, id)
         if not question:
             logger.warning(f"Question with ID {id} not found")
             raise HTTPException(status_code=404, detail="Question not found")
@@ -74,13 +67,12 @@ async def delete_question(id: int):
     logger.debug(f"Deleting question with ID: {id}")
 
     with Session(engine) as session:
-        question = session.exec(select(Question).where(Question.id == id)).first()
+        question = QuestionRepository.get_question(session, id)
         if not question:
             logger.debug(f"Question with ID {id} not found")
             raise HTTPException(status_code=404, detail="Question not found")
         
-        session.delete(question)
-        session.commit()
+        QuestionRepository.delete_question(session, question)
         logger.debug(f"Deleted question with ID: {id}")
 
     return None

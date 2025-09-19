@@ -10,7 +10,19 @@ def test_get_questions():
     data = response.json()
     assert "data" in data
     assert data["page"] == 1
-    assert data["count"] == 5
+    assert data["count"] <= 5
+    total = data["total"]
+
+    # Создание вопроса
+    test_post_question()
+
+    response = client.get("/questions/?page=1&count=5")
+    assert response.status_code == 200
+    data = response.json()
+    assert "data" in data
+    assert data["page"] == 1
+    assert data["total"] == total + 1
+    assert data["data"][0]["text"] == "Что такое доброта?"
 
 
 def test_get_questions_missing_page():

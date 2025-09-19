@@ -5,7 +5,7 @@ from app.utils import is_env_true
 from app.routes.questions import questions_api
 from app.routes.answers import answers_api
 
-kwargs = {}
+kwargs: dict = {}
 if not is_env_true("API_DOCS"):
     kwargs = dict(docs_url=None, redoc_url=None, openapi_url=None, swagger_ui_oauth2_redirect_url=None)
 

@@ -23,6 +23,11 @@ def test_answers():
     response = client.post(f"/questions/{q_id}/answers/", json=payload)
     assert response.status_code == 422
 
+    # Создание ответа с некорректным user_id
+    payload = {"user_id": "It's me, Mario!", "text": "あなたは私を知っていますか？"}
+    response = client.post(f"/questions/{q_id}/answers/", json=payload)
+    assert response.status_code == 422
+
     # Создание первого ответа от нового пользователя
     payload = {"text": "Странный вопрос..."}
     response = client.post(f"/questions/{q_id}/answers/", json=payload)
@@ -60,7 +65,7 @@ def test_answers():
     assert answers[0]["text"] == "Да"
     assert answers[1]["text"] == "Нет"
     assert answers[2]["text"] == "Наверное"
-
+    # Совпадение user_id
     assert answers[0]["user_id"] == answers[1]["user_id"] == answers[2]["user_id"]
 
     # Проверка каскадного удаления ответов
