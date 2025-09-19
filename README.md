@@ -18,6 +18,9 @@ cp .env.example .env
 ```
 Alternatively add them into `docker-compose.yml` or set variables in your shell.
 
+> [!IMPORTANT]
+> If your database in hosted on `localhost` you need to set DB_HOST to `host.docker.internal` instead.
+
 ### 3. Change port mapping
 
 If you changed port in environment variable, you also need to change the port on the right in `docker-compose.yml` to match. Change the left port if you want the app to use a different external port (optional).
@@ -26,7 +29,7 @@ If you changed port in environment variable, you also need to change the port on
 
 Make sure the database exists and is accessible with provided credentials. If you just installed or updated the app, please double-check anything and run the migration script:
 ```bash
-docker compose run qna_app alembic upgrade head
+docker compose run --rm qna_app alembic upgrade head
 ```
 
 ### 5. Start the Docker container

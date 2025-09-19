@@ -12,4 +12,4 @@ COPY . .
 RUN useradd app
 USER app
 
-CMD ["python", "app/main.py"]
+CMD ["python", "-m", "app.main"]
